@@ -1,10 +1,9 @@
 const Joi = require('joi');
 
-const accountSchema = Joi.object({
-    name: Joi.string().max(100).required(),
-    type: Joi.string().valid('savings', 'checking', 'investment').required(),
-    balance: Joi.number().min(0).precision(2).default(0),
-    user_id: Joi.number().integer().required(),
+const accountSchema  = Joi.object({
+    name: Joi.string().min(3).max(100).required(),
+    balance: Joi.number().min(0).required(),
+    user_id: Joi.number().required(),
 });
 
-module.exports = accountSchema;
+module.exports = accountSchema ;

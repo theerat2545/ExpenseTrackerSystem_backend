@@ -1,5 +1,4 @@
 const { EntitySchema } = require('typeorm');
-const User = require('./user');
 
 module.exports = new EntitySchema({
     name: 'Category',
@@ -28,8 +27,14 @@ module.exports = new EntitySchema({
         user: {
             type: 'many-to-one',
             target: 'User',
-            joinColumn: { name: 'user_id' },
-            onDelete: 'CASCADE',
+            joinColumn: { name: 'user_id' }, 
+            nullable: false,
+        },
+        transactions: {
+            type: 'one-to-many',
+            target: 'Transaction',
+            inverseSide: 'category',
         },
     },
+    
 });

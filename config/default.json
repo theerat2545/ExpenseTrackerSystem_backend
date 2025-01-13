@@ -1,0 +1,20 @@
+{
+    "app": {
+      "port": 5000,
+      "environment": "development"
+    },
+    "db": {
+      "type": "mysql",
+      "synchronize": false,
+      "logging": false
+    },
+    "security": {
+      "jwtSecret": "mysecretkey",
+      "jwtExpiresIn": "1d"
+    },
+    "file": {
+      "uploadDir": "./uploads",
+      "maxFileSize": 5000000
+    }
+  }
+  

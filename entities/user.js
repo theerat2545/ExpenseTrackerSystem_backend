@@ -30,6 +30,23 @@ module.exports = new EntitySchema({
             type: 'timestamp',
             default: () => 'CURRENT_TIMESTAMP',
             onUpdate: 'CURRENT_TIMESTAMP',
-        }
+        },
+    },
+    relations: {
+        accounts: {
+            type: 'one-to-many',
+            target: 'Account',
+            inverseSide: 'user',
+        },
+        categories: {
+            type: 'one-to-many',
+            target: 'Category',
+            inverseSide: 'user',
+        },
+        transactions: {
+            type: 'one-to-many',
+            target: 'Transaction',
+            inverseSide: 'user',
+        },
     },
 });

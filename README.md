@@ -57,7 +57,6 @@
 1. **Clone โปรเจค**
    ```sh
    https://github.com/theerat2545/ExpenseTrackerSystem_backend.git
-   cd expense-tracker
    ```
 2. **ติดตั้ง dependencies**
    ```sh

@@ -17,12 +17,6 @@ const AppDataSource = new DataSource({
         require(path.join(__dirname, '../entities/categorie')), 
         require(path.join(__dirname, '../entities/transaction')), 
     ], 
-    // migrations: [
-    //     path.join(__dirname, '../src/migrations/1736790376406-AddAccountToCategories.js'), 
-    // ],
-    // subscribers: [
-    //     path.join(__dirname, '../subscribers/*.js'), 
-    // ],
 });
 
 AppDataSource.initialize()

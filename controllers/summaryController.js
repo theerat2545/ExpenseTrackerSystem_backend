@@ -3,7 +3,6 @@ const path = require('path');
 const { Parser } = require('json2csv');
 const ExcelJS = require('exceljs');
 const csv = require('csv-parser');
-const dayjs = require('dayjs');
 
 const AppDataSource = require('../config/data-source');
 const Transaction = require('../entities/transaction');
@@ -19,24 +18,28 @@ exports.getFilter = async (req, res) => {
 
         // กรองตามเดือนและปี
         if (month && year) {
-            query.andWhere('MONTH(transaction.date) = :month AND YEAR(transaction.date) = :year', { month, year });
+            query.andWhere('MONTH(transaction.created_at) = :month AND YEAR(transaction.created_at) = :year', { month, year });
         } else if (year) {
-            query.andWhere('YEAR(transaction.date) = :year', { year });
-        }
-
-        // กรองตามประเภท (รายรับ-รายจ่าย)
-        if (type) {
-            query.andWhere('transaction.type = :type', { type });
+            query.andWhere('YEAR(transaction.created_at) = :year', { year });
         }
 
         // กรองตามบัญชี
         if (accountId) {
-            query.andWhere('transaction.accountId = :accountId', { accountId });
+            query.andWhere('transaction.account_id = :accountId', { accountId });
         }
 
         // กรองตามหมวดหมู่
         if (categoryId) {
-            query.andWhere('transaction.categoryId = :categoryId', { categoryId });
+            query
+                .innerJoin('transaction.category', 'category') // ทำการ join ตาราง categories
+                .andWhere('category.id = :categoryId', { categoryId }); // กรองตาม category_id
+        }
+
+        // กรองตามประเภท (ประเภทของ category)
+        if (type) {
+            query
+                .innerJoin('transaction.category', 'categoryType') // ใช้ alias ใหม่เพื่อหลีกเลี่ยงการซ้ำ
+                .andWhere('categoryType.type = :type', { type }); // กรองตาม type ของ category
         }
 
         // ดึงข้อมูลทั้งหมด
@@ -45,9 +48,9 @@ exports.getFilter = async (req, res) => {
         // สรุปข้อมูลรายรับ-รายจ่าย
         const summary = transactions.reduce(
             (acc, transaction) => {
-                if (transaction.type === 'income') {
+                if (transaction.category.type === 'income') {
                     acc.totalIncome += transaction.amount;
-                } else if (transaction.type === 'expense') {
+                } else if (transaction.category.type === 'expense') {
                     acc.totalExpense += transaction.amount;
                 }
                 return acc;

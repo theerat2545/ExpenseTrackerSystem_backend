@@ -17,37 +17,45 @@ exports.getAccounts = async (req, res) => {
 
 exports.createAccount = async (req, res) => {
     try {
-
+        // Validate ข้อมูลที่รับเข้ามาก่อน
         const { error, value } = accountSchema.validate(req.body);
         if (error) {
-            console.error('Validation error:', error.details[0].message);
             return res.status(400).json({ error: error.details[0].message });
         }
 
         const { user_id, name, balance } = value;
 
+        // ตรวจสอบว่าผู้ใช้มีอยู่จริง
         const user = await userRepository.findOne({ where: { id: user_id } });
         if (!user) {
-            console.error('User not found for user_id:', user_id);
-            return res.status(400).json({ error: 'Invalid user_id. User does not exist.' });
+            return res.status(404).json({ error: 'User not found.' });
         }
 
+        // สร้างบัญชีใหม่
         const newAccount = accountRepository.create({ name, balance, user });
         await accountRepository.save(newAccount);
 
-        res.status(201).json({ message: 'Account created successfully', data: newAccount, });
+        res.status(201).json({
+            message: 'Account created successfully',
+            data: newAccount,
+        });
     } catch (err) {
-        res.status(500).json({ error: 'Failed to create account', details: err.message, });
+        res.status(500).json({ error: 'Failed to create account', details: err.message });
     }
 };
-
-
 
 exports.deleteAccount = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // ตรวจสอบว่าบัญชีมีอยู่หรือไม่
+        const account = await accountRepository.findOne({ where: { id } });
+        if (!account) {
+            return res.status(404).json({ error: 'Account not found.' });
+        }
+
         await accountRepository.delete(id);
-        res.json({ message: 'Account deleted successfully' });
+        res.status(204).send(); // เปลี่ยนเป็น 204 No Content
     } catch (err) {
         res.status(500).json({ error: 'Failed to delete account', details: err.message });
     }

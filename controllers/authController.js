@@ -9,6 +9,14 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
+        // Validate email and password
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            return res.status(400).json({ error: 'Invalid email format' });
+        }
+        if (password.length < 8) {
+            return res.status(400).json({ error: 'Password must be at least 8 characters' });
+        }
+
         // Check if email already exists
         const existingUser = await userRepository.findOne({ where: { email } });
         if (existingUser) {
@@ -36,7 +44,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ error: 'Invalid email or password' });
         }
 
-        // Generate JWT token
+        // Generate JWT 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.json({ token });
     } catch (err) {
@@ -44,12 +52,13 @@ exports.login = async (req, res) => {
     }
 };
 
-exports.logout = async (req, res) => {
-    // Implement token invalidation logic (e.g., maintaining a token blacklist)
-    res.json({ message: 'Logged out successfully' });
-};
-
-exports.logoutAllDevices = async (req, res) => {
-    // Implement multi-device logout logic
-    res.json({ message: 'Logged out from all devices' });
-};
+exports.logout = (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to logout', details: err.message });
+      }
+      res.clearCookie('connect.sid');
+      res.status(200).json({ message: 'Logged out successfully' });
+    });
+  };
+  

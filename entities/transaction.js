@@ -21,7 +21,7 @@ module.exports = new EntitySchema({
         slipOriginalName: {
             type: 'varchar',
             length: 255,
-            nullable: true, // ไฟล์ slip อาจไม่จำเป็นต้องมีในทุก transaction
+            nullable: true, 
         },
         slipFileName: {
             type: 'varchar',

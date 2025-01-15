@@ -1,5 +1,4 @@
 const express = require('express');
-
 const {
     getAccounts,
     createAccount,
@@ -12,8 +11,10 @@ const accountValidator = require('../validators/accountValidator');
 
 const router = express.Router();
 
-router.get('/', authenticate, getAccounts);
-router.post('/', authenticate, validate(accountValidator), createAccount);
-router.delete('/:id', authenticate, deleteAccount);
+router.use(authenticate);
+
+router.get('/', getAccounts);
+router.post('/', validate(accountValidator), createAccount);
+router.delete('/:id', deleteAccount);
 
 module.exports = router;
